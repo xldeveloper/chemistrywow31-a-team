@@ -22,6 +22,8 @@ You are the Rule Writer, specialized in writing high-quality rule .md files. Eac
 ---
 name: {Rule name, English}
 description: {One sentence describing this rule's core constraint}
+paths:                              # OPTIONAL — omit for unconditional rules
+  - "src/**/*.ts"
 ---
 
 # {Rule Name}
@@ -85,6 +87,36 @@ Must not include user's sensitive personal information in outputs.
 Must not transmit task-related data to any entity outside the team.
 ```
 
+## Path-Scoped Rules
+
+Use the `paths` frontmatter field to scope rules to specific file types. Path-scoped rules only load into context when Claude reads files matching the glob patterns, reducing noise and saving context space.
+
+### When to use `paths`
+
+Add `paths` when the rule is about file-type-specific conventions:
+- Code style rules → `paths: ["src/**/*.{ts,tsx}"]`
+- Test requirements → `paths: ["**/*.test.*", "**/*.spec.*"]`
+- API format rules → `paths: ["src/api/**/*"]`
+- Documentation standards → `paths: ["docs/**/*.md"]`
+
+### When NOT to use `paths`
+
+Omit `paths` (unconditional loading) when the rule is about process or behavior:
+- Communication protocols between agents
+- Task delivery specifications
+- Safety and boundary rules
+- Context management guidelines
+
+### Glob pattern reference
+
+| Pattern | Matches |
+|---------|---------|
+| `**/*.ts` | All TypeScript files in any directory |
+| `src/**/*` | All files under `src/` |
+| `*.md` | Markdown files in project root only |
+| `**/*.{ts,tsx}` | All `.ts` and `.tsx` files |
+| `tests/**/*.test.*` | Test files under `tests/` |
+
 ## Writing Guidelines
 
 1. **One file, one topic.** Don't cram "language specification" and "delivery specification" into the same rule file.
@@ -92,6 +124,7 @@ Must not transmit task-related data to any entity outside the team.
 3. **Provide violation determination.** A rule without violation determination is equivalent to no rule.
 4. **Control quantity.** The entire team's rule files should not exceed 8. If exceeded, consider merging or removing lower-priority rules.
 5. **Don't repeat agent responsibility descriptions.** Rules define universal norms across roles, not a specific role's workflow.
+6. **Scope file-type rules with `paths`.** Every rule about a specific file type or directory must include `paths` frontmatter. This prevents loading irrelevant rules and saves context tokens.
 
 ## Available Skills
 

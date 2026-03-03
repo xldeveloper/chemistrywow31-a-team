@@ -43,8 +43,9 @@ Mark as "external" if the skill is sourced from an external repository or market
 
 ### CLAUDE.md vs rules/ Decision
 
-- Put in CLAUDE.md: Norms that apply to **all** agents without exception (e.g., communication language, output format, tech stack constraints)
-- Put in rules/: Norms that apply to a **subset** of agents or have role-specific variations
+- Put in CLAUDE.md: Norms that apply to **all** agents without exception (e.g., communication language, output format, tech stack constraints). Use `@path/to/file` imports to reference shared documents without duplicating content.
+- Put in rules/ (unconditional): Process norms that apply to a **subset** of agents or have role-specific variations (e.g., communication protocols, task delivery specs)
+- Put in rules/ (with `paths`): File-type-specific conventions that only matter when working with matching files (e.g., TypeScript style → `paths: ["**/*.{ts,tsx}"]`, test standards → `paths: ["**/*.test.*"]`). Path-scoped rules save context by loading only when relevant files are accessed.
 
 ### Rule Types
 1. **Behavioral**: Define agent behavioral boundaries (e.g., cannot act beyond scope of responsibilities)
@@ -121,6 +122,8 @@ Design by rule type sequentially, ensuring:
 - Each rule has clear applicability scope (entire team / specific roles)
 - No conflicting rules
 - No unenforceable rules
+- File-type-specific rules include `paths` frontmatter with appropriate glob patterns
+- Process/behavioral rules remain unconditional (no `paths`)
 
 ## Output Format
 

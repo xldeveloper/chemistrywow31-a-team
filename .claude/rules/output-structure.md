@@ -34,8 +34,10 @@ teams/{team-name}/
     │   └── {skill-3}/
     │       └── SKILL.md
     └── rules/
-        ├── {rule-1}.md
-        └── {rule-2}.md
+        ├── {rule-1}.md               ← Unconditional or path-scoped
+        ├── {rule-2}.md
+        └── {subdirectory}/           ← Optional grouping (e.g., frontend/, backend/)
+            └── {rule-3}.md
 ```
 
 ### Naming Conventions
@@ -54,11 +56,13 @@ Content to include in CLAUDE.md:
 - Universal behavioral norms (e.g., communication language, output format)
 - Project-wide technical constraints (e.g., tech stack, coding standards)
 - Deployment mode instructions (subagent vs Agent Teams, see below)
+- `@path/to/file` imports to reference shared documents (e.g., `@README.md`, `@docs/architecture.md`). Imported files expand into context at launch. Relative paths resolve from the CLAUDE.md location. Maximum import depth is 5 levels.
 
 Content NOT to include in CLAUDE.md (put these in `rules/` instead):
 - Rules that apply to only a subset of agents
 - Role-specific behavioral constraints
 - Quality standards for specific deliverable types
+- File-type-specific conventions (use `paths` frontmatter in rules/ to scope them)
 
 ### Deployment Mode Section in CLAUDE.md
 
@@ -67,13 +71,30 @@ Every generated CLAUDE.md must include a deployment mode section specifying how 
 - **Subagent mode**: Agents are invoked via the Task tool within a single session. Coordinator manages all delegation. Suitable for sequential workflows with clear handoffs.
 - **Agent Teams mode** (experimental): Agents run as independent Claude Code instances with shared task lists and direct messaging. Suitable for parallel workflows where agents need peer-to-peer communication. Requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` to be enabled.
 
+### Path-Scoped Rules
+
+Rules in `.claude/rules/` support an optional `paths` field in YAML frontmatter. Use this to scope rules to specific file types, reducing context consumption and improving adherence:
+
+- **Unconditional rules** (no `paths`): Load at session start for all files. Use for process rules, communication norms, and team-wide behavioral constraints.
+- **Path-scoped rules** (with `paths`): Load only when Claude reads files matching the glob patterns. Use for file-type-specific conventions (e.g., TypeScript style, test coverage requirements, API format standards).
+
+```yaml
+---
+name: TypeScript Conventions
+description: Enforce TypeScript coding standards across all source files
+paths:
+  - "src/**/*.{ts,tsx}"
+  - "lib/**/*.ts"
+---
+```
+
 ### Placement Rules
 
 - `CLAUDE.md` must be at the team root directory, at the same level as `.claude/`
 - Coordinator .md must be in `agents/` root directory, cannot be placed in subfolders
 - Non-coordinator agents must be in subfolders under `agents/`
 - Each skill must have its own folder, containing `SKILL.md` (uppercase)
-- All rules are in `rules/` root directory, rules do not have subfolders
+- Rules are in `rules/` directory. Subdirectories are allowed for grouping (e.g., `rules/frontend/`, `rules/backend/`). All `.md` files are discovered recursively
 
 ## Violation Determination
 

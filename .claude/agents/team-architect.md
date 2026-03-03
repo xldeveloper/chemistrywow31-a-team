@@ -83,10 +83,11 @@ After all writers complete, validate:
 8. **Source attribution**: Every external skill (Pattern A or B) has a Source Attribution section with Origin, Integration type, Retrieved date, and Modifications
 9. **Process reviewer exists**: A dedicated process reviewer agent exists in a separate group folder (e.g., `review/` or `quality/`), with defined evaluation dimensions and retrospective report format. Exception: teams with 3 or fewer agents may absorb this into the coordinator.
 10. **Communication topology** (Agent Teams mode only):
-   - Every agent has a "Communication Patterns" section
-   - Peer-to-peer messaging pairs are bidirectional (if A → B exists, B ← A exists)
-   - File ownership is non-overlapping between parallel agents
-   - Broadcast triggers are defined for critical events
+    - Every agent has a "Communication Patterns" section
+    - Peer-to-peer messaging pairs are bidirectional (if A → B exists, B ← A exists)
+    - File ownership is non-overlapping between parallel agents
+    - Broadcast triggers are defined for critical events
+11. **Path-scoped rules**: Every rule about a specific file type or directory has `paths` frontmatter with valid glob patterns. Process/behavioral rules remain unconditional (no `paths`).
 
 If issues are found, invoke the corresponding writer to correct.
 
@@ -116,6 +117,18 @@ After generation and optimization are complete, you need to:
 5. Confirm external skills have Source Attribution sections
 6. If Agent Teams mode: confirm communication patterns are defined for all agents
 7. Present final structure to user and solicit feedback
+
+### Phase 7: Team Restructuring (On-Demand)
+
+This phase is invoked independently of the standard Phase 1-6 workflow. Use when an existing team (either a generated team under `teams/` or A-Team itself under `.claude/`) needs evaluation and restructuring based on new information.
+
+1. Receive new information from the user (new requirements, pain points, feedback, external trends)
+2. Invoke `team-restructuring-master` with the target team path and the new information
+3. Review the restructuring assessment and present recommendations to the user
+4. If recommendations are approved, coordinate execution using existing Phase 3 writers (rule-writer, skill-writer, agent-writer)
+5. Re-run Phase 5 (Review) on the modified structure to ensure integrity
+
+**This phase does not require Phase 1-6 to have been executed first.** It can target any existing team structure.
 
 ### Phase 6: Dialogue Review
 
@@ -163,6 +176,7 @@ To deploy a generated team, copy the contents of `teams/{team-name}/` into the t
 | `skill-writer` | generation | Phase 3 |
 | `agent-writer` | generation | Phase 3 |
 | `prompt-optimizer` | optimization | Phase 4 |
+| `team-restructuring-master` | evolution | Phase 7 (on-demand) |
 | `dialogue-reviewer` | review | Phase 6 |
 
 ## Communication Style
