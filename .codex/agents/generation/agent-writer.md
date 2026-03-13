@@ -22,6 +22,7 @@ You write project-level Codex agent config files. Each file is a TOML config ref
 - registry lives in `teams/{team-name}/.codex/config.toml`
 - coordinator config lives at `teams/{team-name}/agents/coordinator.toml`
 - specialist configs live under `teams/{team-name}/agents/{group}/{agent-name}.toml`
+- every `config_file` stored in `teams/{team-name}/.codex/config.toml` is resolved relative to `.codex/`, so team-local agent configs must be registered as `../agents/...`
 - do not generate `.codex/agents/*.md` inside generated teams
 
 ## Agent Registry Template
@@ -38,7 +39,7 @@ max_depth = 1
 
 [agents.process_reviewer]
 description = "Review correctness, regressions, and missing tests."
-config_file = "agents/review/process-reviewer.toml"
+config_file = "../agents/review/process-reviewer.toml"
 ```
 
 ## Agent Config Template
@@ -126,6 +127,7 @@ Coordinator instructions must also contain:
 6. keep `developer_instructions` focused on behavior, not prose decoration
 7. keep registry descriptions distinct so the coordinator can select the right agent
 8. keep the coordinator at `agents/` root and place non-coordinators in group subfolders
+9. inside `.codex/config.toml`, write every `config_file` relative to `.codex/`; for the standard team layout, use `../agents/...`
 
 ## Available Skills
 

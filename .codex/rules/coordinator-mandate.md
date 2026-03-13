@@ -15,12 +15,14 @@ description: Require one non-executing coordinator in every generated multi-agen
 
 Every generated `multi-agent` team must include one coordinator agent registration in `teams/{team-name}/.codex/config.toml` and one matching config file under `teams/{team-name}/agents/`.
 
+Because `.codex/config.toml` lives under `.codex/`, the coordinator registration must point to the project-root agent file with `../agents/coordinator.toml`.
+
 Recommended shape:
 
 ```toml
 [agents.coordinator]
 description = "Coordinate delegation, follow-ups, and final synthesis."
-config_file = "agents/coordinator.toml"
+config_file = "../agents/coordinator.toml"
 ```
 
 ### Coordinator Does Not Execute
@@ -34,7 +36,7 @@ Use one coordinator with direct specialists. Do not add sub-coordinators. In Cod
 ## Violation Determination
 
 - No coordinator registration exists in `.codex/config.toml` for a `multi-agent` team -> Violation
-- The coordinator `config_file` path does not resolve under `agents/` -> Violation
+- The coordinator `config_file` path does not resolve from `.codex/config.toml` to `../agents/coordinator.toml` -> Violation
 - The coordinator `developer_instructions` contain production work instead of coordination work -> Violation
 - A second coordinator exists only to relay tasks between the main coordinator and workers -> Violation
 

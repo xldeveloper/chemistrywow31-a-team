@@ -76,8 +76,10 @@ max_depth = 1
 
 [agents.team_architect]
 description = "Coordinate A-Team discovery, planning, generation, review, and delivery."
-config_file = "agents/team-architect.toml"
+config_file = "../agents/team-architect.toml"
 ```
+
+`config_file` is resolved relative to `.codex/config.toml`, not the repo root. Because this repo keeps runtime agent configs in the top-level `agents/` directory, the correct path form is `../agents/...`.
 
 What these settings are for:
 
@@ -248,8 +250,10 @@ max_depth = 1
 
 [agents.team_architect]
 description = "Coordinate A-Team discovery, planning, generation, review, and delivery."
-config_file = "agents/team-architect.toml"
+config_file = "../agents/team-architect.toml"
 ```
+
+`config_file` 是相對於 `.codex/config.toml` 解析，不是相對於 repo root。因為這個 repo 把 runtime agent config 放在頂層 `agents/` 目錄，所以正確寫法是 `../agents/...`。
 
 這些設定的用途：
 

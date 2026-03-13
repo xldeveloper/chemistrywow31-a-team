@@ -67,6 +67,8 @@ When the execution mode decision from Phase 1 is **multi-agent**, validate the g
 
 Do not block generation on `~/.codex/config.toml`. The generated package must work from project-level config.
 
+Remember that every `config_file` inside `.codex/config.toml` is resolved relative to the `.codex/` directory. For the standard generated layout, agent configs live under the project-root `agents/` folder, so the registered paths should use `../agents/...`.
+
 #### Step 0: Write `AGENTS.md`, `.codex/config.toml`, `.codex/docs/format-mapping.md`, And `.codex/docs/format-mapping.manifest.yaml` Yourself
 
 Write `teams/{team-name}/AGENTS.md` directly. It must include:
@@ -83,7 +85,7 @@ Write `teams/{team-name}/.codex/config.toml` directly. It must include:
 1. project-level feature flags for the chosen execution mode
 2. `[agents]` settings when the team is multi-agent
 3. one `[agents.<id>]` entry per generated role when the team is multi-agent
-4. `config_file` paths that resolve under `teams/{team-name}/agents/`
+4. `config_file` paths written relative to `teams/{team-name}/.codex/config.toml`, which means team-local agent configs under `teams/{team-name}/agents/` are registered as `../agents/...`
 
 Write `teams/{team-name}/.codex/docs/format-mapping.md` directly. It must include:
 
@@ -143,7 +145,7 @@ Validate all of the following:
 13. multi-agent teams define registry entries, follow-up triggers, completion contracts, and file ownership
 14. generation preserved Codex as the canonical authored output and did not modify `.claude/` unless the user explicitly requested conversion work
 15. multi-agent teams set `[features] multi_agent = true` in project `.codex/config.toml`
-16. every registered `config_file` resolves under `agents/`
+16. every registered `config_file` resolves from `.codex/config.toml` to the intended file under `../agents/`
 
 If a check fails, send the issue back to the appropriate writer.
 

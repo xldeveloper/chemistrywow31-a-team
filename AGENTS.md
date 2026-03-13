@@ -13,6 +13,7 @@ Generate all deliverables under `teams/{team-name}/`. Discovery must confirm the
 - Use `.codex/agents/` as the A-Team specialist playbook source of truth. Generated teams must not use this path for runtime agent configs.
 - Use `agents/` as A-Team's thin official Codex multi-agent runtime registry. Keep each TOML file minimal and make the corresponding `.codex/agents/` playbook authoritative.
 - Treat project `.codex/config.toml` as the authoritative Codex runtime switch. Do not require `~/.codex/config.toml` for generated Codex teams.
+- In any project `.codex/config.toml`, resolve each `config_file` relative to the `.codex/` directory. When runtime agent TOML files live at project-root `agents/`, register them as `../agents/...`.
 - Use `.codex/rules/` as the hard-constraint library.
 - Use `.agents/skills/` as the runtime-discoverable skill surface. `.codex/skills/` is the authored mirror.
 - Use `.codex/docs/claude-to-codex-mapping.md` as the bidirectional format mapping reference and retain per-team mapping artifacts for later conversion work.

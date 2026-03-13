@@ -12,6 +12,7 @@ This repository keeps the original `.claude/` implementation as the legacy/sourc
 - Normal generation writes the Codex package first, then preserves mapping for later export or import work
 - Do not rewrite `.claude/` during normal Codex generation unless the user explicitly requests a conversion task
 - Generated Codex agents use project-level registration in `.codex/config.toml` plus per-agent TOML files under `agents/`
+- Inside `.codex/config.toml`, every `config_file` is resolved relative to `.codex/`. For team-local runtime agent configs stored under project-root `agents/`, generated entries therefore use `../agents/...`.
 
 ## Mapping Table
 
@@ -33,7 +34,7 @@ This repository keeps the original `.claude/` implementation as the legacy/sourc
 Convert each Codex agent from two inputs:
 
 1. the registry entry in `.codex/config.toml`
-2. the referenced `agents/**/*.toml` file
+2. the referenced agent TOML file after resolving `config_file` relative to `.codex/config.toml` (normally `../agents/**/*.toml`)
 
 Deterministic path rule:
 
@@ -45,7 +46,7 @@ Deterministic field mapping:
 | --- | --- | --- | --- |
 | `[agents.<id>]` table name | output file identity | adapted | use the id for stable conversion bookkeeping |
 | `[agents.<id>].description` | summary line or frontmatter description | adapted | keep wording stable when possible |
-| `config_file` | target file path | adapted | convert `.toml` suffix to `.md` |
+| `config_file` | target file path | adapted | resolve it relative to `.codex/config.toml`, then convert the resulting `.toml` path to `.md` |
 | `developer_instructions` | markdown body | direct | preserve headings and lists verbatim when possible |
 | `model` | sidecar metadata | sidecar | Claude agent markdown has no direct equivalent |
 | `model_reasoning_effort` | sidecar metadata | sidecar | retain only when round-trip preservation matters |
@@ -66,12 +67,13 @@ Convert each Claude agent markdown file into:
 Deterministic path rule:
 
 - `.claude/agents/{path}.md` -> `agents/{path}.toml`
+- register that file in `.codex/config.toml` as `../agents/{path}.toml` because the registry file lives under `.codex/`
 
 Deterministic field mapping:
 
 | Claude source | Codex target | Mode | Notes |
 | --- | --- | --- | --- |
-| file path | `config_file` | direct | swap `.md` for `.toml` |
+| file path | `config_file` | adapted | swap `.md` for `.toml`, then store it relative to `.codex/config.toml` as `../agents/{path}.toml` |
 | frontmatter `description` or first summary line | `[agents.<id>].description` | adapted | prefer explicit frontmatter when present |
 | markdown body | `developer_instructions` | direct | preserve structure and wording |
 | unsupported Claude-specific metadata | sidecar or dropped | lossy/manual | call out in mapping artifact if present |
@@ -201,7 +203,7 @@ artifacts:
     section_map:
       markdown_body: "developer_instructions"
     validation:
-      - "config_file path must match the agent file path"
+      - "config_file must resolve from .codex/config.toml to the agent file path"
       - "developer_instructions must be non-empty"
     lossy: false
     sidecar:
@@ -218,7 +220,7 @@ Use sidecars only for lossy or bundle-style transforms such as registry metadata
 
 The mapping artifact is conversion-ready only if all of the following are true:
 
-- every `[agents.<id>]` entry has a resolvable `config_file`
+- every `[agents.<id>]` entry has a `config_file` that resolves from `.codex/config.toml`
 - every `agents/**/*.toml` file has non-empty `developer_instructions`
 - the manifest explicitly states which runtime-only fields require sidecars
 - generated paths preserve group structure in both directions

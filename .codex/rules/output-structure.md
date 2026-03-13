@@ -100,11 +100,16 @@ When `multi-agent` is chosen, the team must also define:
 - project-level `.codex/config.toml` registration with `[features] multi_agent = true`
 - one `[agents.<id>]` entry per coordinator or specialist
 - one `agents/**/*.toml` file per registered agent
+- `config_file` values written relative to `.codex/config.toml`; for sibling project-root agent files, use `../agents/...`
 - parallel-safe file ownership
 - coordinator follow-up triggers
 - completion contracts for each spawned specialist
 - project-level runtime prerequisites for Codex
 - setup fallback when the target project already has conflicting Codex config
+
+### Registry Path Resolution
+
+`config_file` values in `.codex/config.toml` are resolved relative to the `.codex/` directory, not the project root. Since generated multi-agent teams place runtime agent configs under the project-root `agents/` folder, those registry entries must use `../agents/...`.
 
 ### Path-Scoped Rules
 
@@ -123,7 +128,7 @@ Rules may include optional `paths` frontmatter to scope them to file patterns. T
 - non-coordinator agents must live under group subfolders in `agents/`
 - `multi-agent` teams must set `[features] multi_agent = true` in `.codex/config.toml`
 - every `[agents.<id>]` entry must include `description` and `config_file`
-- every `config_file` must resolve to an existing `agents/**/*.toml`
+- every `config_file` must resolve from the `.codex/` directory to an existing `../agents/**/*.toml`
 - every agent config must include `model`, `model_reasoning_effort`, `sandbox_mode`, and `developer_instructions`
 
 ## Violation Determination
@@ -136,7 +141,7 @@ Rules may include optional `paths` frontmatter to scope them to file patterns. T
 - a non-coordinator agent is placed at `agents/` root -> Violation
 - `.codex/config.toml` lacks `[features] multi_agent = true` for a `multi-agent` team -> Violation
 - an agent registry entry is missing `description` or `config_file` -> Violation
-- a registered `config_file` does not resolve -> Violation
+- a registered `config_file` does not resolve from `.codex/config.toml` -> Violation
 - an agent config is missing one of the required keys -> Violation
 - a skill exists only in `.codex/skills/` or only in `.agents/skills/` -> Violation
 - a `multi-agent` `AGENTS.md` omits project-level runtime prerequisites or conflict fallback -> Violation

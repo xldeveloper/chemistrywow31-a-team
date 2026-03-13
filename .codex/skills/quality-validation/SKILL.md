@@ -38,7 +38,7 @@ Use this skill to verify that a generated team is ready for delivery.
 
 - every referenced skill path resolves
 - every referenced rule path resolves
-- every agent registry entry resolves to a real `agents/**/*.toml` file
+- every agent registry entry resolves from the directory containing `.codex/config.toml` to a real `../agents/**/*.toml` file
 - the coordinator stays at `agents/` root and workers stay in subfolders
 - skill users map to real agents or team-level roles
 - coordinator subordinate list covers all specialists
@@ -64,4 +64,4 @@ Produce a four-part pass/fail report with concrete issues and corrections.
 
 ### Output
 
-`Structural Completeness: pass; Reference Consistency: fail because .codex/config.toml registers agents/review/process-reviewer.toml but the file is missing.`
+`Structural Completeness: pass; Reference Consistency: fail because .codex/config.toml registers ../agents/review/process-reviewer.toml but the file is missing.`
